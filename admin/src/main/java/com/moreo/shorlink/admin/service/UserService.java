@@ -2,6 +2,7 @@ package com.moreo.shorlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
+import com.moreo.shorlink.admin.dto.req.UserRegisterReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 
@@ -28,4 +29,9 @@ public interface UserService extends IService<UserDO> {
      * @return 是否存在，存在返回 True, 不存在返回 False
      */
     Boolean hasUsername(String username);
+
+    /**
+     * 注册用户
+     */
+    void register(UserRegisterReqDTO requestParam);
 }
