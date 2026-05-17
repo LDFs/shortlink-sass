@@ -11,12 +11,15 @@ import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RBloomFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
+
+    private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -42,5 +45,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         UserActualRespDTO userRespDTO = new UserActualRespDTO();
         BeanUtils.copyProperties(userDO,userRespDTO);
         return userRespDTO;
+    }
+
+    @Override
+    public Boolean hasUsername(String username) {
+        // 使用接口查询数据库中用户名是否已存在
+//        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+//                .eq(UserDO::getUsername, username);
+//        UserDO userDO = baseMapper.selectOne(queryWrapper);
+//        return Objects.nonNull(userDO);
+
+        // 使用布隆过滤器来查询用户名是否已存在。在注册时使用
+        return userRegisterCachePenetrationBloomFilter.contains(username);
     }
 }
