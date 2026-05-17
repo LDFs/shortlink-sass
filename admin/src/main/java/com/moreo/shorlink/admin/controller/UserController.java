@@ -28,7 +28,6 @@ public class UserController {
 //        }
 
         return Results.success(userService.getUserByUsername(username));
-
     }
 
 

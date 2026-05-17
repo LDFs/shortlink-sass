@@ -14,9 +14,13 @@ import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import static com.moreo.shorlink.admin.common.constant.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
 import static com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum.USER_NAME_EXIST;
 import static com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum.USER_SAVE_ERROR;
 
@@ -25,6 +29,7 @@ import static com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum.USER_SAVE_
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements UserService {
 
     private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
+    private final RedissonClient redissonClient;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -69,9 +74,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if(hasUsername(requestParam.getUsername())) {
             throw new ClientException(USER_NAME_EXIST);
         }
-        int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
-        if(inserted <= 0) {
+
+        // 使用分布式锁，来防止在短时间内多个同一用户名的注册
+        RLock lock = redissonClient.getLock(LOCK_USER_REGISTER_KEY + requestParam.getUsername());
+        if(!lock.tryLock()) {
+            throw new ClientException(USER_NAME_EXIST);
+        }
+        try {
+            int inserted = baseMapper.insert(BeanUtil.toBean(requestParam, UserDO.class));
+            if(inserted <= 0) {
+                throw new ClientException(USER_SAVE_ERROR);
+            }
+
+            userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+        }catch (DuplicateKeyException e) {
             throw new ClientException(USER_SAVE_ERROR);
+        }finally {
+            lock.unlock();
         }
     }
 }
