@@ -2,6 +2,7 @@ package com.moreo.shorlink.admin.controller;
 
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
+import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,13 @@ public class UserController {
 //        }
 
         return Results.success(userService.getUserByUsername(username));
+
+    }
+
+
+    @GetMapping("/api/shortlink/v1/actual/user/{username}")
+    public Result<UserActualRespDTO> getUserActualByUsername(@PathVariable("username") String username) {
+        return Results.success(userService.getUserActualByUsername(username));
 
     }
 }

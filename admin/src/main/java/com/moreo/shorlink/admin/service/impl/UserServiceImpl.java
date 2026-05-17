@@ -7,6 +7,7 @@ import com.moreo.shorlink.admin.common.convention.exception.ClientException;
 import com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
 import com.moreo.shorlink.admin.dao.mapper.UserMapper;
+import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             throw new ClientException(UserErrorCodeEnum.USER_NULL);
         }
         UserRespDTO userRespDTO = new UserRespDTO();
+        BeanUtils.copyProperties(userDO,userRespDTO);
+        return userRespDTO;
+    }
+
+    @Override
+    public UserActualRespDTO getUserActualByUsername(String username) {
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = baseMapper.selectOne(queryWrapper);
+        if(userDO == null) {
+            throw new ClientException(UserErrorCodeEnum.USER_NULL);
+        }
+        UserActualRespDTO userRespDTO = new UserActualRespDTO();
         BeanUtils.copyProperties(userDO,userRespDTO);
         return userRespDTO;
     }

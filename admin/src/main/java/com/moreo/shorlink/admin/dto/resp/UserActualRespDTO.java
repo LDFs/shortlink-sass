@@ -1,11 +1,9 @@
 package com.moreo.shorlink.admin.dto.resp;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.moreo.shorlink.admin.common.serialize.PhoneDesensitizationSerializer;
 import lombok.Data;
 
 @Data
-public class UserRespDTO {
+public class UserActualRespDTO {
 
     /**
      * id
@@ -26,7 +24,6 @@ public class UserRespDTO {
      * 手机号
      * 脱敏手机信息 @JsonSerialize
      */
-    @JsonSerialize(using = PhoneDesensitizationSerializer.class)
     private String phone;
 
     /**

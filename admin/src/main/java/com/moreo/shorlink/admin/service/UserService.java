@@ -2,6 +2,7 @@ package com.moreo.shorlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
+import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 
 public interface UserService extends IService<UserDO> {
@@ -14,4 +15,10 @@ public interface UserService extends IService<UserDO> {
      */
     UserRespDTO getUserByUsername(String username);
 
+    /**
+     * 获取用户的无脱敏的真实信息
+     * @param username 用户名
+     * @return  用户返回实体
+     */
+    UserActualRespDTO getUserActualByUsername(String username);
 }
