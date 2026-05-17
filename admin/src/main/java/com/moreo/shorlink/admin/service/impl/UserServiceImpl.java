@@ -3,6 +3,8 @@ package com.moreo.shorlink.admin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moreo.shorlink.admin.common.convention.exception.ClientException;
+import com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
 import com.moreo.shorlink.admin.dao.mapper.UserMapper;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
@@ -21,8 +23,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 .eq(UserDO::getUsername, username);
         UserDO userDO = baseMapper.selectOne(queryWrapper);
         if(userDO == null) {
-//            throw new ServiceException(UserErrorCodeEnum.USER_NULL)
-            return null;
+            throw new ClientException(UserErrorCodeEnum.USER_NULL);
         }
         UserRespDTO userRespDTO = new UserRespDTO();
         BeanUtils.copyProperties(userDO,userRespDTO);

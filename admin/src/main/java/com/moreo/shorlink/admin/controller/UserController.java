@@ -1,7 +1,7 @@
 package com.moreo.shorlink.admin.controller;
 
 import com.moreo.shorlink.admin.common.convention.result.Result;
-import com.moreo.shorlink.admin.common.enums.UserErrorCodeEnum;
+import com.moreo.shorlink.admin.common.convention.result.Results;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,16 @@ public class UserController {
 
     @GetMapping("/api/shortlink/v1/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
-        UserRespDTO userRespDTO = userService.getUserByUsername(username);
-        if(userRespDTO == null){
-            return new Result<UserRespDTO>().setCode(UserErrorCodeEnum.USER_NULL.code()).setMessage(UserErrorCodeEnum.USER_NULL.message());
-        }else {
-            return new Result<UserRespDTO>().setCode("0").setData(userRespDTO);
-        }
+//        UserRespDTO userRespDTO = userService.getUserByUsername(username);
+//        if(userRespDTO == null){
+////            return Results.failure(UserErrorCodeEnum.USER_NULL.code(), UserErrorCodeEnum.USER_NULL.message());
+//            // 枚举值的类型 就是枚举实现的接口的类型
+//            return Results.failure(UserErrorCodeEnum.USER_NULL);
+//        }else {
+//            return Results.success(userRespDTO);
+//        }
+
+        return Results.success(userService.getUserByUsername(username));
 
     }
 }
