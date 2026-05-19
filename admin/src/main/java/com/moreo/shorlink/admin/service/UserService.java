@@ -2,9 +2,11 @@ package com.moreo.shorlink.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
+import com.moreo.shorlink.admin.dto.req.UserLoginReqDTO;
 import com.moreo.shorlink.admin.dto.req.UserRegisterReqDTO;
 import com.moreo.shorlink.admin.dto.req.UserUpdateReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
+import com.moreo.shorlink.admin.dto.resp.UserLoginRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 
 public interface UserService extends IService<UserDO> {
@@ -41,5 +43,13 @@ public interface UserService extends IService<UserDO> {
      */
     void update(UserUpdateReqDTO requestParam);
 
+    /**
+     * 用户登陆
+     */
+    UserLoginRespDTO login(UserLoginReqDTO requestParam);
 
+    /**
+     * 检查用户是否登陆
+     */
+    Boolean checkLogin(String username, String token);
 }

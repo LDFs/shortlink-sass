@@ -2,9 +2,11 @@ package com.moreo.shorlink.admin.controller;
 
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
+import com.moreo.shorlink.admin.dto.req.UserLoginReqDTO;
 import com.moreo.shorlink.admin.dto.req.UserRegisterReqDTO;
 import com.moreo.shorlink.admin.dto.req.UserUpdateReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
+import com.moreo.shorlink.admin.dto.resp.UserLoginRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +54,15 @@ public class UserController {
     public Result<Void> update(@RequestBody UserUpdateReqDTO requestParam) {
         userService.update(requestParam);
         return Results.success();
+    }
+
+    @PostMapping("/api/shortlink/v1/user/login")
+    public Result<UserLoginRespDTO> login(@RequestBody UserLoginReqDTO requestParam) {
+        return Results.success(userService.login(requestParam));
+    }
+
+    @GetMapping("/api/shortlink/v1/user/check-login")
+    public Result<Boolean> checkLogin(String username, String token) {
+        return Results.success(userService.checkLogin(username, token));
     }
 }
