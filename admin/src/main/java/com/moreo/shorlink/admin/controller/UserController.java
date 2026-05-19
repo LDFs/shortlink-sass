@@ -3,6 +3,7 @@ package com.moreo.shorlink.admin.controller;
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
 import com.moreo.shorlink.admin.dto.req.UserRegisterReqDTO;
+import com.moreo.shorlink.admin.dto.req.UserUpdateReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 import com.moreo.shorlink.admin.service.UserService;
@@ -44,6 +45,12 @@ public class UserController {
     @PostMapping("/api/shortlink/v1/user/save")
     public Result<Void> register(@RequestBody UserRegisterReqDTO requestParam) {
         userService.register(requestParam);
+        return Results.success();
+    }
+
+    @PutMapping("/api/shortlink/v1/user/update")
+    public Result<Void> update(@RequestBody UserUpdateReqDTO requestParam) {
+        userService.update(requestParam);
         return Results.success();
     }
 }

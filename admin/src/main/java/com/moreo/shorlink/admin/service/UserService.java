@@ -3,6 +3,7 @@ package com.moreo.shorlink.admin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.moreo.shorlink.admin.dao.entity.UserDO;
 import com.moreo.shorlink.admin.dto.req.UserRegisterReqDTO;
+import com.moreo.shorlink.admin.dto.req.UserUpdateReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
 
@@ -34,4 +35,11 @@ public interface UserService extends IService<UserDO> {
      * 注册用户
      */
     void register(UserRegisterReqDTO requestParam);
+
+    /**
+     * 更改用户
+     */
+    void update(UserUpdateReqDTO requestParam);
+
+
 }
