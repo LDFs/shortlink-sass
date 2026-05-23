@@ -2,6 +2,7 @@ package com.moreo.shorlink.admin.controller;
 
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
+import com.moreo.shorlink.admin.dto.req.GroupOrderDTO;
 import com.moreo.shorlink.admin.dto.req.GroupReqDTO;
 import com.moreo.shorlink.admin.dto.req.GroupUpdateDTO;
 import com.moreo.shorlink.admin.dto.resp.GroupRespDTO;
@@ -38,5 +39,11 @@ public class GroupController {
     public Result<Void> deleteGroup(@RequestParam String gid) {
         groupService.deleteGroup(gid);
         return  Results.success();
+    }
+
+    @PostMapping("/api/shortlink/admin/v1/group/sort")
+    public Result<Void> sortGroup(@RequestBody List<GroupOrderDTO> requestParam) {
+        groupService.orderGroup(requestParam);
+        return Results.success();
     }
 }

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moreo.shorlink.admin.common.biz.user.UserContext;
 import com.moreo.shorlink.admin.dao.entity.GroupDO;
 import com.moreo.shorlink.admin.dao.mapper.GroupMapper;
+import com.moreo.shorlink.admin.dto.req.GroupOrderDTO;
 import com.moreo.shorlink.admin.dto.req.GroupUpdateDTO;
 import com.moreo.shorlink.admin.dto.resp.GroupRespDTO;
 import com.moreo.shorlink.admin.service.GroupService;
@@ -82,6 +83,20 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         GroupDO groupDO = new GroupDO();
         groupDO.setDelFlag(1);
         baseMapper.update(groupDO, updateWrapper);
+    }
+
+    @Override
+    public void orderGroup(List<GroupOrderDTO> requestParam) {
+        requestParam.forEach(item -> {
+            GroupDO groupDO = GroupDO.builder()
+                    .sortOrder(item.getSortOrder())
+                    .build();
+            LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                    .eq(GroupDO::getUsername, UserContext.getUsername())
+                    .eq(GroupDO::getGid, item.getGid())
+                    .eq(GroupDO::getDelFlag, 0);
+            baseMapper.update(groupDO, updateWrapper);
+        });
     }
 
     private String saveGroupUniqueReturnGid() {
