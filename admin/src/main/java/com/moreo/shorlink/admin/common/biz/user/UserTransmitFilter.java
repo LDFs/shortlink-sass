@@ -21,6 +21,10 @@ public class UserTransmitFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String username = httpServletRequest.getHeader("username");
+        /**
+         * 有 username header 的接口，设置用户上下文，然后放行
+         * 没有的，什么都不做，直接放行
+         */
         if (StrUtil.isNotBlank(username)) {
             String id = httpServletRequest.getHeader("id");
             String realName = httpServletRequest.getHeader("realName");

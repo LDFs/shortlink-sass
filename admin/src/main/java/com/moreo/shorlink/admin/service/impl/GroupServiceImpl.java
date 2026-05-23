@@ -3,11 +3,13 @@ package com.moreo.shorlink.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moreo.shorlink.admin.common.biz.user.UserContext;
 import com.moreo.shorlink.admin.dao.entity.GroupDO;
 import com.moreo.shorlink.admin.dao.mapper.GroupMapper;
+import com.moreo.shorlink.admin.dto.req.GroupUpdateDTO;
 import com.moreo.shorlink.admin.dto.resp.GroupRespDTO;
 import com.moreo.shorlink.admin.service.GroupService;
 import com.moreo.shorlink.admin.util.RandomGenerator;
@@ -58,6 +60,17 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
 
         return BeanUtil.copyToList(groupDOList, GroupRespDTO.class);
+    }
+
+    @Override
+    public void updateGroup(GroupUpdateDTO requestParam) {
+        LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getGid, requestParam.getGid());
+        GroupDO groupDO = new GroupDO();
+        groupDO.setName(requestParam.getName());
+        baseMapper.update(groupDO, updateWrapper);
     }
 
     private String saveGroupUniqueReturnGid() {

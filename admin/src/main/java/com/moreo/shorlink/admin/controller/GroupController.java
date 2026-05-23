@@ -3,13 +3,11 @@ package com.moreo.shorlink.admin.controller;
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
 import com.moreo.shorlink.admin.dto.req.GroupReqDTO;
+import com.moreo.shorlink.admin.dto.req.GroupUpdateDTO;
 import com.moreo.shorlink.admin.dto.resp.GroupRespDTO;
 import com.moreo.shorlink.admin.service.GroupService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,11 @@ public class GroupController {
     public Result<List<GroupRespDTO>> listGroup() {
         List<GroupRespDTO> result = groupService.listGroup();
         return Results.success(result);
+    }
+
+    @PutMapping("/api/shortlink/admin/v1/group/update")
+    public Result<Void> updateGroup(@RequestBody GroupUpdateDTO requestParam) {
+        groupService.updateGroup(requestParam);
+        return Results.success();
     }
 }
