@@ -73,6 +73,17 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         baseMapper.update(groupDO, updateWrapper);
     }
 
+    @Override
+    public void deleteGroup(String gud) {
+        LambdaUpdateWrapper<GroupDO> updateWrapper = Wrappers.lambdaUpdate(GroupDO.class)
+                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getDelFlag, 0)
+                .eq(GroupDO::getGid, gud);
+        GroupDO groupDO = new GroupDO();
+        groupDO.setDelFlag(1);
+        baseMapper.update(groupDO, updateWrapper);
+    }
+
     private String saveGroupUniqueReturnGid() {
         String gid = RandomGenerator.generateRandom();
         return gid;
