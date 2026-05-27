@@ -1,2 +1,16 @@
 server:
   port: 8001
+
+spring:
+  application:
+    name: short-link-admin
+  datasource:
+        url: jdbc:mysql://localhost:3306/link?useUnicode=true&characterEncoding=utf8
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
