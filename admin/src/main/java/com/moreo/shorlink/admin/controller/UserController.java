@@ -19,7 +19,7 @@ public class UserController {
     // @RequiredArgsConstructor 会自动为所有 final 字段生成构造方法，Spring 通过构造器完成注入。
     private final UserService userService;
 
-    @GetMapping("/api/shortlink/v1/user/{username}")
+    @GetMapping("/api/shortlink/admin/v1/user/{username}")
     public Result<UserRespDTO> getUserByUsername(@PathVariable("username") String username) {
 //        UserRespDTO userRespDTO = userService.getUserByUsername(username);
 //        if(userRespDTO == null){
@@ -34,39 +34,39 @@ public class UserController {
     }
 
 
-    @GetMapping("/api/shortlink/v1/actual/user/{username}")
+    @GetMapping("/api/shortlink/admin/v1/actual/user/{username}")
     public Result<UserActualRespDTO> getUserActualByUsername(@PathVariable("username") String username) {
         return Results.success(userService.getUserActualByUsername(username));
     }
 
-    @GetMapping("/api/shortlink/v1/user/has-username")
+    @GetMapping("/api/shortlink/admin/v1/user/has-username")
     public Result<Boolean> hasUsername(@RequestParam("username") String username) {
         return Results.success(userService.hasUsername(username));
     }
 
-    @PostMapping("/api/shortlink/v1/user/save")
+    @PostMapping("/api/shortlink/admin/v1/user/save")
     public Result<Void> register(@RequestBody UserRegisterReqDTO requestParam) {
         userService.register(requestParam);
         return Results.success();
     }
 
-    @PutMapping("/api/shortlink/v1/user/update")
+    @PutMapping("/api/shortlink/admin/v1/user/update")
     public Result<Void> update(@RequestBody UserUpdateReqDTO requestParam) {
         userService.update(requestParam);
         return Results.success();
     }
 
-    @PostMapping("/api/shortlink/v1/user/login")
+    @PostMapping("/api/shortlink/admin/v1/user/login")
     public Result<UserLoginRespDTO> login(@RequestBody UserLoginReqDTO requestParam) {
         return Results.success(userService.login(requestParam));
     }
 
-    @GetMapping("/api/shortlink/v1/user/check-login")
+    @GetMapping("/api/shortlink/admin/v1/user/check-login")
     public Result<Boolean> checkLogin(String username, String token) {
         return Results.success(userService.checkLogin(username, token));
     }
 
-    @DeleteMapping("/api/shortlink/v1/user/logout")
+    @DeleteMapping("/api/shortlink/admin/v1/user/logout")
     public Result<Void> logout(String username, String token) {
         userService.logout(username, token);
         return Results.success();
