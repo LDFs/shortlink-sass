@@ -1,7 +1,10 @@
 package com.moreo.shorlink.project.dto.resp;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 public class ShortLinkPageRespDTO {
@@ -45,6 +48,12 @@ public class ShortLinkPageRespDTO {
      * 启用标识 0：启用 1：未启用
      */
     private Integer enableStatus;
+
+    /**
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    private Date createTime;
 
     /**
      * 描述
