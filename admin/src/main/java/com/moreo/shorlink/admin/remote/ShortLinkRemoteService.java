@@ -1,4 +1,4 @@
-package com.moreo.shorlink.admin.remote.dto;
+package com.moreo.shorlink.admin.remote;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;

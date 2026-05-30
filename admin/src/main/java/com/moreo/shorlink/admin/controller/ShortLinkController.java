@@ -2,7 +2,7 @@ package com.moreo.shorlink.admin.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moreo.shorlink.admin.common.convention.result.Result;
-import com.moreo.shorlink.admin.remote.dto.ShortLinkRemoteService;
+import com.moreo.shorlink.admin.remote.ShortLinkRemoteService;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;

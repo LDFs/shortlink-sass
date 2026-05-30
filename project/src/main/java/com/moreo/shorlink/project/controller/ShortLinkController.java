@@ -6,13 +6,13 @@ import com.moreo.shorlink.project.common.convention.result.Results;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkCreateRespDTO;
+import com.moreo.shorlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.moreo.shorlink.project.service.ShortLinkService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,5 +28,10 @@ public class ShortLinkController {
     @GetMapping("/api/shortlink/v1/page")
     public Result<IPage<ShortLinkPageRespDTO>> pageLink(ShortLinkPageReqDTO requestParam) {
         return Results.success(shortLinkService.pagerShortLink(requestParam));
+    }
+
+    @GetMapping("/api/shortlink/v1/count")
+    public Result<List<ShortLinkGroupCountQueryRespDTO>> listGroupCount(@RequestParam("gid") List<String> requestParam) {
+        return Results.success(shortLinkService.listGroupShortLinkCount(requestParam));
     }
 }
