@@ -1,13 +1,19 @@
 package com.moreo.shorlink.project.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.text.StrBuilder;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moreo.shorlink.project.common.convention.exception.ServiceException;
 import com.moreo.shorlink.project.dao.entity.ShortLinkDO;
 import com.moreo.shorlink.project.dao.mapper.ShortLinkMapper;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
+import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkCreateRespDTO;
+import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.moreo.shorlink.project.service.ShortLinkService;
 import com.moreo.shorlink.project.util.HashUtil;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +64,20 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .originUrl(requestParam.getOriginUrl())
                 .gid(requestParam.getGid())
                 .build();
+    }
+
+    @Override
+    public IPage<ShortLinkPageRespDTO> pagerShortLink(ShortLinkPageReqDTO requestParam) {
+        LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                .eq(ShortLinkDO::getGid, requestParam.getGid())
+                .eq(ShortLinkDO::getEnableStatus, 0)
+                .eq(ShortLinkDO::getDelFlag, 0);
+        IPage<ShortLinkDO> resultPage = baseMapper.selectPage(requestParam, queryWrapper);
+        return resultPage.convert(each -> {
+            ShortLinkPageRespDTO result = BeanUtil.toBean(each, ShortLinkPageRespDTO.class);
+            result.setDomain("http://" + each.getDomain());
+            return result;
+        });
     }
 
     String generateSuffix(ShortLinkCreateReqDTO requestParam) {
