@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
  * 用户配置自动庄派
@@ -18,9 +19,9 @@ public class UserConfig {
      * 用户信息传递过滤器
      */
     @Bean
-    public FilterRegistrationBean<UserTransmitFilter> globalUserTransmitFilter() {
+    public FilterRegistrationBean<UserTransmitFilter> globalUserTransmitFilter(StringRedisTemplate stringRedisTemplate, HandlerExceptionResolver handlerExceptionResolver) {
         FilterRegistrationBean<UserTransmitFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new UserTransmitFilter());
+        registration.setFilter(new UserTransmitFilter(stringRedisTemplate, handlerExceptionResolver));
         registration.addUrlPatterns("/*");
         registration.setOrder(0);
         return registration;
