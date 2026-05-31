@@ -8,9 +8,11 @@ import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
+import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +41,15 @@ public interface ShortLinkRemoteService {
     }
 
 
-
+    /**
+     * 查询短链接分组内数量
+     */
+    default Result<List<ShortLinkGroupCountQueryRespDTO>> listGroupShortLinkCount(List<String> requestParam) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("gid",  requestParam);
+        String result = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/count", map);
+        return JSON.parseObject(result, new TypeReference<>() {});
+    }
 
 
 }
