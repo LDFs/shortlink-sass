@@ -5,6 +5,7 @@ import com.moreo.shorlink.project.common.convention.result.Result;
 import com.moreo.shorlink.project.common.convention.result.Results;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
+import com.moreo.shorlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
@@ -33,5 +34,11 @@ public class ShortLinkController {
     @GetMapping("/api/shortlink/v1/count")
     public Result<List<ShortLinkGroupCountQueryRespDTO>> listGroupCount(@RequestParam("gid") List<String> requestParam) {
         return Results.success(shortLinkService.listGroupShortLinkCount(requestParam));
+    }
+
+    @PostMapping("/api/shortlink/v1/update")
+    public Result<Void> updateShortLink(@RequestBody ShortLinkUpdateReqDTO requestParam) {
+        shortLinkService.updateShortLink(requestParam);
+        return Results.success();
     }
 }

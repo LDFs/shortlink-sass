@@ -1,4 +1,4 @@
-package com.moreo.shorlink.project.dto.resp;
+package com.moreo.shorlink.admin.remote.dto.req;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -7,27 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class ShortLinkPageRespDTO {
-
-    /**
-     * id
-     */
-    private Long id;
-
-    /**
-     * 域名
-     */
-    private String domain;
-
-    /**
-     * 短链接
-     */
-    private String shortUri;
-
-    /**
-     * 完整短链接
-     */
-    private String fullShortUrl;
+public class ShortLinkUpdateReqDTO {
 
     /**
      * 原始链接
@@ -35,9 +15,10 @@ public class ShortLinkPageRespDTO {
     private String originUrl;
 
     /**
-     * 点击量
+     * 完整短链接
      */
-    private Integer clickNum;
+    private String fullShortUrl;
+
 
     /**
      * 分组标识
@@ -50,15 +31,19 @@ public class ShortLinkPageRespDTO {
     private Integer enableStatus;
 
     /**
-     * 创建时间
+     * 有效期类型 0：永久有效 1：自定义
+     */
+    private Integer validDateType;
+
+    /**
+     * 有效期
      */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
-    private Date createTime;
+    private Date validDate;
 
     /**
      * 描述
      */
     @TableField("`describe`")
     private String describe;
-
 }
