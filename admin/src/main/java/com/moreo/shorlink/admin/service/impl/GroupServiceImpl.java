@@ -35,8 +35,13 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void saveGroup(String groupName) {
+        saveGroup(UserContext.getUsername(), groupName);
+    }
+
+    @Override
+    public void saveGroup(String userName, String groupName) {
         LambdaQueryWrapper<GroupDO> queryWrapper = Wrappers.lambdaQuery(GroupDO.class)
-                .eq(GroupDO::getUsername, UserContext.getUsername())
+                .eq(GroupDO::getUsername, userName)
                 .eq(GroupDO::getDelFlag, 0);
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
         int retryCount = 0;
@@ -48,7 +53,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 GroupDO groupDO = GroupDO.builder()
                         .gid(gid)
                         .sortOrder(0)
-                        .username(UserContext.getUsername())
+                        .username(userName)
                         .name(groupName)
                         .build();
                 baseMapper.insert(groupDO);

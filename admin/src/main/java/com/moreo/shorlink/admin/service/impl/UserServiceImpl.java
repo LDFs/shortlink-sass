@@ -17,6 +17,7 @@ import com.moreo.shorlink.admin.dto.req.UserUpdateReqDTO;
 import com.moreo.shorlink.admin.dto.resp.UserActualRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserLoginRespDTO;
 import com.moreo.shorlink.admin.dto.resp.UserRespDTO;
+import com.moreo.shorlink.admin.service.GroupService;
 import com.moreo.shorlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
@@ -43,6 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate  stringRedisTemplate;
+    private final GroupService groupService;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -100,6 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
             }
 
             userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+            groupService.saveGroup(requestParam.getUsername(), "默认分组");
         }catch (DuplicateKeyException e) {
             throw new ClientException(USER_SAVE_ERROR);
         }finally {
