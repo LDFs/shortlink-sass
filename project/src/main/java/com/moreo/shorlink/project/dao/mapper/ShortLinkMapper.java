@@ -10,5 +10,6 @@ import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
  */
 public interface ShortLinkMapper extends BaseMapper<ShortLinkDO> {
 
+    // 直接拿的仓库代码，后期才使用
     IPage<ShortLinkDO> pageLink(ShortLinkPageReqDTO pageParam);
 }
