@@ -39,3 +39,6 @@
 11. 分页查询使用 Mybatis 的分页功能，需要配置分页插件，在 project/config/DataBaseConfiguration 中
 12. 项目流程是 前端 -> 后管 -> 中台，所以在后管应用中需要访问 project 应用中的接口，具体在 admin/remote 中，目前使用 HttpUtil 的方式来访问
 13. 
+
+缓存击穿：短时间内，大量请求访问 缓存中过期的数据
+缓存穿透：短时间内，大量请求访问 缓存中不存在的数据

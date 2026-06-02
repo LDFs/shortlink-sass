@@ -14,6 +14,11 @@ spring:
         driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
     # ShardingSphere 配置文件路径
         url: jdbc:shardingsphere:classpath:shardingsphere-config-${database.env:dev}.yaml
+  # 定义 MVC 的模板
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .html
 
   data:
     redis:

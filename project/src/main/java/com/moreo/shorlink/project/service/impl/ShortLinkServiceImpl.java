@@ -191,19 +191,28 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 ((HttpServletResponse) response).sendRedirect(originalLink);
                 return;
             }
+            // 使用布隆过滤器，判断记录是否在数据库中
+            boolean contains = shortLinkCreateCache.contains(fullShortUrl);
+            if(!contains) {
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
+            }
+
         }catch (Exception e){
             throw new ClientException(e.getMessage());
         }
-        // 使用布隆过滤器，判断记录是否在数据库中
-        boolean contains = shortLinkCreateCache.contains(fullShortUrl);
-        if(!contains) {
-            return;
-        }
+
         // 从缓存中查找这个记录是否是空值
         String gotoIsNullShortLink = stringRedisTemplate.opsForValue().get(String.format(GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl));
-        if(StringUtil.isNotBlank(gotoIsNullShortLink)) {
-            return;
+        try {
+            if(StringUtil.isNotBlank(gotoIsNullShortLink)) {
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
+            }
+        }catch (Exception e){
+            throw new ClientException(e.getMessage());
         }
+
         // 3. 加锁，防止缓存击穿
         RLock lock = redissonClient.getLock(String.format(LOCK_GOTO_SHORT_LINK_KEY, fullShortUrl));
         lock.lock();
@@ -218,6 +227,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             // 又从缓存中查找这个记录是否是空值
             gotoIsNullShortLink = stringRedisTemplate.opsForValue().get(String.format(GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl));
             if(StringUtil.isNotBlank(gotoIsNullShortLink)) {
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
                 return;
             }
             // 6. 从数据库中查找。先从 goto 表中找对应的 gid，再从 link 表中找原始链接
@@ -227,7 +237,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             if(shortLinkGotoDO == null) {
                 // 数据库中没有记录，就在缓存中保存 这个记录是控制，防止下次又要从数据库中查找它
                 stringRedisTemplate.opsForValue().set(String.format(GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
-                throw new ClientException("短链接记录不存在");
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
             }
             LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
                     .eq(ShortLinkDO::getGid, shortLinkGotoDO.getGid())
@@ -238,7 +249,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             if(hasShortLinkDO == null || (hasShortLinkDO.getValidDate() != null && hasShortLinkDO.getValidDate().before(new Date()))) {
                 // 数据库中没有记录，就在缓存中保存 这个记录是控制，防止下次又要从数据库中查找它
                 stringRedisTemplate.opsForValue().set(String.format(GOTO_IS_NULL_SHORT_LINK_KEY, fullShortUrl), "-", 30, TimeUnit.MINUTES);
-                throw new ClientException("短链接记录不存在");
+                ((HttpServletResponse) response).sendRedirect("/page/notfound");
+                return;
             }
             // 7. 存进缓存中，返回跳转链接
             stringRedisTemplate.opsForValue().set(String.format(GOTO_SHORT_LINK_KEY, fullShortUrl),
