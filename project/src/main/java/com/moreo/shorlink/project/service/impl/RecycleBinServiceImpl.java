@@ -8,12 +8,16 @@ import com.moreo.shorlink.project.dao.mapper.ShortLinkMapper;
 import com.moreo.shorlink.project.dto.req.RecycleBinSaveReqDTO;
 import com.moreo.shorlink.project.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import static com.moreo.shorlink.project.common.constant.RedisKeyConstant.GOTO_SHORT_LINK_KEY;
 
 @Service
 @RequiredArgsConstructor
 public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLinkDO> implements RecycleBinService {
 
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void saveRecycleBin(RecycleBinSaveReqDTO requestParam) {
@@ -25,6 +29,7 @@ public class RecycleBinServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLin
         ShortLinkDO shortLinkDO = ShortLinkDO.builder()
                 .enableStatus(1)
                 .build();
+        stringRedisTemplate.delete(String.format(GOTO_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
         baseMapper.update(shortLinkDO, updateWrapper);
     }
 }
