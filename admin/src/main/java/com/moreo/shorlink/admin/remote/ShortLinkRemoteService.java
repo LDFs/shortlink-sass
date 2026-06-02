@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moreo.shorlink.admin.common.convention.result.Result;
+import com.moreo.shorlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
@@ -60,5 +61,9 @@ public interface ShortLinkRemoteService {
     default Result<String> getTitleByUrl(String url) {
         String result = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/url-title?url="+url);
         return JSON.parseObject(result, new TypeReference<>() {});
+    }
+
+    default void saveRecycleBin(RecycleBinSaveReqDTO requestParam) {
+        HttpUtil.post("http://127.0.0.1:8001/api/shortlink/v1/recycle-bin/save", JSON.toJSONString(requestParam));
     }
 }
