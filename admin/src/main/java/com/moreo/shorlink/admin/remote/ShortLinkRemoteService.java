@@ -5,10 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moreo.shorlink.admin.common.convention.result.Result;
-import com.moreo.shorlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.moreo.shorlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
-import com.moreo.shorlink.admin.remote.dto.req.ShortLinkPageReqDTO;
-import com.moreo.shorlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
+import com.moreo.shorlink.admin.remote.dto.req.*;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
@@ -70,9 +67,9 @@ public interface ShortLinkRemoteService {
     /**
      * 分页查询回收站短链接
      */
-    default Result<Page<ShortLinkPageRespDTO>> pageRecycleBinShortLink(ShortLinkPageReqDTO requestParam) {
+    default Result<Page<ShortLinkPageRespDTO>> pageRecycleBinShortLink(RecycleBinPageReqDTO requestParam) {
         Map<String, Object> map = new HashMap<>();
-        map.put("gid",  requestParam.getGid());
+        map.put("gidList",  requestParam.getGidList());
         map.put("current",  requestParam.getCurrent());
         map.put("size",  requestParam.getSize());
         String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/recycle-bin/page", map);

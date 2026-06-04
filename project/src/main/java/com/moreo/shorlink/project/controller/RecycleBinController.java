@@ -3,8 +3,8 @@ package com.moreo.shorlink.project.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moreo.shorlink.project.common.convention.result.Result;
 import com.moreo.shorlink.project.common.convention.result.Results;
+import com.moreo.shorlink.project.dto.req.RecycleBinPageReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinSaveReqDTO;
-import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.moreo.shorlink.project.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class RecycleBinController {
      * 分页查询回收站短链接
      */
     @GetMapping("/api/shortlink/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageLink(ShortLinkPageReqDTO requestParam) {
+    public Result<IPage<ShortLinkPageRespDTO>> pageLink(RecycleBinPageReqDTO requestParam) {
         return Results.success(recycleBinService.pagerShortLink(requestParam));
     }
 }

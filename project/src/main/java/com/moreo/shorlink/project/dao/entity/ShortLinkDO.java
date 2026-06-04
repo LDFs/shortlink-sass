@@ -2,6 +2,7 @@ package com.moreo.shorlink.project.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.moreo.shorlink.project.common.database.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,6 +75,7 @@ public class ShortLinkDO extends BaseDO {
     /**
      * 有效期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date validDate;
 
     /**
