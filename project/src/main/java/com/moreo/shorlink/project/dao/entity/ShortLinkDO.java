@@ -63,6 +63,11 @@ public class ShortLinkDO extends BaseDO {
     private Integer enableStatus;
 
     /**
+     * 删除标识 0：未删除 1：已被删除
+     */
+    private Integer delFlag;
+
+    /**
      * 创建类型 0：接口创建 1：控制台创建
      */
     private Integer createdType;

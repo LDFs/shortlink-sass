@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.common.convention.result.Results;
 import com.moreo.shorlink.admin.remote.ShortLinkRemoteService;
+import com.moreo.shorlink.admin.remote.dto.req.RecycleBinDeleteReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.RecycleBinPageReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.RecycleBinRecoverReqDTO;
 import com.moreo.shorlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
@@ -39,6 +40,15 @@ public class RecycleBinController {
     @PostMapping("/api/shortlink/admin/v1/recycle-bin/recover")
     public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam) {
         shortLinkRemoteService.recoverRecycleBin(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 删除回收站中的短链接
+     */
+    @PostMapping("/api/shortlink/admin/v1/recycle-bin/delete")
+    public Result<Void> deleteRecycleBin(@RequestBody RecycleBinDeleteReqDTO requestParam) {
+        shortLinkRemoteService.deleteRecycleBin(requestParam);
         return Results.success();
     }
 }

@@ -1,6 +1,7 @@
 package com.moreo.shorlink.project.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.moreo.shorlink.project.dto.req.RecycleBinDeleteReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinPageReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinRecoverReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinSaveReqDTO;
@@ -25,4 +26,9 @@ public interface RecycleBinService {
      * 恢复回收站短链接
      */
     void recoverRecycleBin(RecycleBinRecoverReqDTO requestParam);
+
+    /**
+     * 删除回收站短链接
+     */
+    void deleteRecycleBin(RecycleBinDeleteReqDTO requestParam);
 }

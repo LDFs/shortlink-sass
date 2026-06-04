@@ -3,6 +3,7 @@ package com.moreo.shorlink.project.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moreo.shorlink.project.common.convention.result.Result;
 import com.moreo.shorlink.project.common.convention.result.Results;
+import com.moreo.shorlink.project.dto.req.RecycleBinDeleteReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinPageReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinRecoverReqDTO;
 import com.moreo.shorlink.project.dto.req.RecycleBinSaveReqDTO;
@@ -46,6 +47,15 @@ public class RecycleBinController {
     @PostMapping("/api/shortlink/v1/recycle-bin/recover")
     public Result<Void> recoverRecycleBin(@RequestBody RecycleBinRecoverReqDTO requestParam){
         recycleBinService.recoverRecycleBin(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 删除回收站
+     */
+    @PostMapping("/api/shortlink/v1/recycle-bin/delete")
+    public Result<Void> deleteRecycleBin(@RequestBody RecycleBinDeleteReqDTO requestParam){
+        recycleBinService.deleteRecycleBin(requestParam);
         return Results.success();
     }
 }
