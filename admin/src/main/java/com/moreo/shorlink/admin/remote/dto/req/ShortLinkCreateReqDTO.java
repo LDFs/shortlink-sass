@@ -1,6 +1,7 @@
 package com.moreo.shorlink.admin.remote.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.moreo.shorlink.admin.common.database.BaseDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ShortLinkCreateReqDTO {
+public class ShortLinkCreateReqDTO extends BaseDO {
 
     /**
      * 域名
