@@ -24,3 +24,10 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
+
+short-link:
+  domain:
+    default: nurl.ink:8001
+  stats:
+    locale:
+      amap-key: f3d61336cbf30859af568ac8fbdf5787

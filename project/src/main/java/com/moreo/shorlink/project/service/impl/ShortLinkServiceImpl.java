@@ -7,6 +7,8 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.core.text.StrBuilder;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -17,9 +19,11 @@ import com.moreo.shorlink.project.common.convention.exception.ClientException;
 import com.moreo.shorlink.project.common.convention.exception.ServiceException;
 import com.moreo.shorlink.project.common.enums.ShortLinkValidType;
 import com.moreo.shorlink.project.dao.entity.LinkAccessStatsDO;
+import com.moreo.shorlink.project.dao.entity.LinkLocaleStatsDO;
 import com.moreo.shorlink.project.dao.entity.ShortLinkDO;
 import com.moreo.shorlink.project.dao.entity.ShortLinkGotoDO;
 import com.moreo.shorlink.project.dao.mapper.LinkAccessStatsMapper;
+import com.moreo.shorlink.project.dao.mapper.LinkLocaleStatsMapper;
 import com.moreo.shorlink.project.dao.mapper.ShortLinkGotoMapper;
 import com.moreo.shorlink.project.dao.mapper.ShortLinkMapper;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
@@ -42,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -52,6 +57,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.moreo.shorlink.project.common.constant.RedisKeyConstant.*;
+import static com.moreo.shorlink.project.common.constant.ShortLinkConstant.AMAP_REMOTE_URL;
 
 @Slf4j
 @Service
@@ -63,6 +69,10 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final StringRedisTemplate stringRedisTemplate;
     private final RedissonClient redissonClient;
     private final LinkAccessStatsMapper linkAccessStatsMapper;
+    private final LinkLocaleStatsMapper linkLocaleStatsMapper;
+
+    @Value("${short-link.stats.locale.amap-key}")
+    private String statsLocaleAmapKey;
 
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam) {
@@ -339,6 +349,29 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .date(date)
                     .build();
             linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
+
+            Map<String, Object> localeParamMap = new HashMap<>();
+            localeParamMap.put("key", statsLocaleAmapKey);
+            localeParamMap.put("ip", uip);
+            String localeResultSte = HttpUtil.get(AMAP_REMOTE_URL, localeParamMap);
+            JSONObject localeResultObj = JSONObject.parseObject(localeResultSte);
+            String infoCode = localeResultObj.getString("infocode");
+            String actualProvince = "未知";
+            String actualCity = "未知";
+            if(StrUtil.isNotBlank(infoCode) || StrUtil.equals(infoCode, "10000")){
+                String province = localeResultObj.getString("province");
+                boolean unknownFlag = StrUtil.equals(province, "[]");
+                LinkLocaleStatsDO linkLocaleStatsDO = LinkLocaleStatsDO.builder()
+                        .province(unknownFlag ? actualProvince : province)
+                        .city(unknownFlag ? actualCity : localeResultObj.getString("city"))
+                        .adcode(unknownFlag ? actualCity : localeResultObj.getString("adcode"))
+                        .cnt(1)
+                        .fullShortUrl(fullShortUrl)
+                        .date(date)
+                        .country("中国")
+                        .build();
+                linkLocaleStatsMapper.shortLinkLocaleState(linkLocaleStatsDO);
+            }
         } catch (Exception e) {
             log.error("短链接访问量统计异常", e);
             throw new ClientException(e.getMessage());
