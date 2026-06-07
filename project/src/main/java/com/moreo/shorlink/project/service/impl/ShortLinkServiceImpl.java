@@ -289,8 +289,13 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 uvCookie.setPath(StrUtil.sub(fullShortUrl, fullShortUrl.indexOf("/"), fullShortUrl.length()));
                 ((HttpServletResponse) response).addCookie(uvCookie);
                 uvFirstFlag.set(true);
-                // 在缓存里保存记录，，会有很大的量，需要优化
+                // 在缓存里保存记录
+                // 存在的问题：1. 会有很大的量，需要优化；
+                // 2. 数据库的表，使用了 `full_short_url`,`gid`,`date`,`hour` 作为联合 key，如果 hour 跨了整点，就会在表中创建一个新的条目，而缓存里面还是不变的，
+                // uvFirstFlag和uipFirstFlag都为false，那么添加进数据库时这条记录对应的 uv 和 uip 都是0，实际应该是1
                 stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, uv);
+                // 使缓存到下一个整点就过期
+                stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, LinkUtil.getMillisecondsToNextHour(), TimeUnit.MILLISECONDS);
             };
             if (ArrayUtil.isNotEmpty(cookies)) {
                 Arrays.stream(cookies)
@@ -300,6 +305,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .ifPresentOrElse(each -> {
                             // 尝试将记录添加到缓存Set中，如果添加成功，那么就是首次
                             Long added = stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, each);
+                            stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, LinkUtil.getMillisecondsToNextHour(), TimeUnit.MILLISECONDS);
                             uvFirstFlag.set(added != null && added > 0L);
                         }, addResponseCookieTask);
             } else {
@@ -308,7 +314,8 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
             // 获取用户请求的 IP，判断这个 IP 是否访问过该短链接
             String uip = LinkUtil.getActualIp((HttpServletRequest) request);
-            Long uipAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uv:"+fullShortUrl, uip);
+            Long uipAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uip:"+fullShortUrl, uip);
+            stringRedisTemplate.expire("short-link:stats:uip:" + fullShortUrl, LinkUtil.getMillisecondsToNextHour(), TimeUnit.MILLISECONDS);
             boolean uipFirstFlag = uipAdded != null && uipAdded > 0L;
 
             if (StringUtil.isBlank(gid)) {
