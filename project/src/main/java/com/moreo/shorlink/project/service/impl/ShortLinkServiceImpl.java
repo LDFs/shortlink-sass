@@ -337,7 +337,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .pv(1)
                     .uv(uvFirstFlag.get() ? 1 : 0)
                     .uip(uipFirstFlag ? 1 : 0)
-                    .gid(gid)
                     .hour(hour)
                     .weekday(weekValue)
                     .fullShortUrl(fullShortUrl)

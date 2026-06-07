@@ -28,11 +28,6 @@ public class LinkAccessStatsDO extends BaseDO {
     private String fullShortUrl;
 
     /**
-     * 分组标识
-     */
-    private String gid;
-
-    /**
      * 日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
