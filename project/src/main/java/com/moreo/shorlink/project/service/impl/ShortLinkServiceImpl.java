@@ -311,23 +311,22 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .eq(ShortLinkGotoDO::getFullShortUrl, fullShortUrl);
                 ShortLinkGotoDO shortLinkGotoDO = shortLinkGotoMapper.selectOne(queryWrapper);
                 gid = shortLinkGotoDO.getGid();
-
-                Date date = new Date();
-                int hour = DateUtil.hour(date, true);
-                Week week = DateUtil.dayOfWeekEnum(date);
-                int weekValue = week.getIso8601Value();
-                LinkAccessStatsDO linkAccessStatsDO = LinkAccessStatsDO.builder()
-                        .pv(1)
-                        .uv(uvFirstFlag.get() ? 1 : 0)
-                        .uip(1)
-                        .gid(gid)
-                        .hour(hour)
-                        .weekday(weekValue)
-                        .fullShortUrl(fullShortUrl)
-                        .date(date)
-                        .build();
-                linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
             }
+            Date date = new Date();
+            int hour = DateUtil.hour(date, true);
+            Week week = DateUtil.dayOfWeekEnum(date);
+            int weekValue = week.getIso8601Value();
+            LinkAccessStatsDO linkAccessStatsDO = LinkAccessStatsDO.builder()
+                    .pv(1)
+                    .uv(uvFirstFlag.get() ? 1 : 0)
+                    .uip(1)
+                    .gid(gid)
+                    .hour(hour)
+                    .weekday(weekValue)
+                    .fullShortUrl(fullShortUrl)
+                    .date(date)
+                    .build();
+            linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
         } catch (Exception e) {
             log.error("短链接访问量统计异常", e);
             throw new ClientException(e.getMessage());
