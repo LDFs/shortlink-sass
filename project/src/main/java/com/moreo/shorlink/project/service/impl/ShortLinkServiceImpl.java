@@ -49,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.moreo.shorlink.project.common.constant.RedisKeyConstant.*;
 import static com.moreo.shorlink.project.common.constant.ShortLinkConstant.AMAP_REMOTE_URL;
@@ -66,6 +67,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
     private final LinkOsStatsMapper linkOsStatsMapper;
     private final LinkBrowserStatsMapper linkBrowserStatsMapper;
+    private final LinkAccessLogsMapper linkAccessLogsMapper;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
@@ -286,11 +288,12 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private void shortLinkStats(String fullShortUrl, String gid, ServletRequest request, ServletResponse response) {
         AtomicBoolean uvFirstFlag = new AtomicBoolean(false);
         Cookie[] cookies = ((HttpServletRequest) request).getCookies();
+        AtomicReference<String> uv = new AtomicReference<>();
         try {
             // 创建新的 cookie，记录当前用户是否访问过该短链接，访问过的话，uv就不加1
             Runnable addResponseCookieTask = () -> {
-                String uv = UUID.fastUUID().toString();
-                Cookie uvCookie = new Cookie("uv", uv);
+                uv.set(UUID.fastUUID().toString());
+                Cookie uvCookie = new Cookie("uv", uv.get());
                 uvCookie.setMaxAge(60 * 60 * 24 * 30);
                 uvCookie.setPath(StrUtil.sub(fullShortUrl, fullShortUrl.indexOf("/"), fullShortUrl.length()));
                 ((HttpServletResponse) response).addCookie(uvCookie);
@@ -299,7 +302,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 // 存在的问题：1. 会有很大的量，需要优化；
                 // 2. 数据库的表，使用了 `full_short_url`,`gid`,`date`,`hour` 作为联合 key，如果 hour 跨了整点，就会在表中创建一个新的条目，而缓存里面还是不变的，
                 // uvFirstFlag和uipFirstFlag都为false，那么添加进数据库时这条记录对应的 uv 和 uip 都是0，实际应该是1
-                stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, uv);
+                stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, uv.get());
                 // 使缓存到下一个整点就过期
                 stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, LinkUtil.getMillisecondsToNextHour(), TimeUnit.MILLISECONDS);
             };
@@ -309,6 +312,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .findFirst()
                         .map(Cookie::getValue)
                         .ifPresentOrElse(each -> {
+                            uv.set(each);
                             // 尝试将记录添加到缓存Set中，如果添加成功，那么就是首次
                             Long added = stringRedisTemplate.opsForSet().add("short-link:stats:uv:" + fullShortUrl, each);
                             stringRedisTemplate.expire("short-link:stats:uv:" + fullShortUrl, LinkUtil.getMillisecondsToNextHour(), TimeUnit.MILLISECONDS);
@@ -385,6 +389,15 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .date(date)
                     .build();
             linkBrowserStatsMapper.shortLinkBrowserState(linkBrowserStatsDO);
+
+            LinkAccessLogsDO linkAccessLogsDO = LinkAccessLogsDO.builder()
+                    .fullShortUrl(fullShortUrl)
+                    .browser(browser)
+                    .user(uv.get())
+                    .ip(uip)
+                    .os(os)
+                    .build();
+            linkAccessLogsMapper.insert(linkAccessLogsDO);
         } catch (Exception e) {
             log.error("短链接访问量统计异常", e);
             throw new ClientException(e.getMessage());
