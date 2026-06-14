@@ -9,6 +9,7 @@ import com.moreo.shorlink.admin.remote.dto.req.*;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
+import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkStatsRespDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,5 +83,16 @@ public interface ShortLinkRemoteService {
 
     default void deleteRecycleBin(RecycleBinDeleteReqDTO requestParam) {
         HttpUtil.post("http://127.0.0.1:8001/api/shortlink/v1/recycle-bin/delete", JSON.toJSONString(requestParam));
+    }
+
+    default Result<ShortLinkStatsRespDTO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("gid",  requestParam.getGid());
+        map.put("fullShortUrl",  requestParam.getFullShortUrl());
+        map.put("startDate",  requestParam.getStartDate());
+        map.put("endDate",  requestParam.getEndDate());
+        map.put("enableStatus",   requestParam.getEnableStatus());
+        String result = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/stats", map);
+        return JSON.parseObject(result, new TypeReference<>() {});
     }
 }
