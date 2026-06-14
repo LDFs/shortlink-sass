@@ -6,10 +6,7 @@ import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moreo.shorlink.admin.common.convention.result.Result;
 import com.moreo.shorlink.admin.remote.dto.req.*;
-import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
-import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
-import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
-import com.moreo.shorlink.admin.remote.dto.resp.ShortLinkStatsRespDTO;
+import com.moreo.shorlink.admin.remote.dto.resp.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -95,4 +92,19 @@ public interface ShortLinkRemoteService {
         String result = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/stats", map);
         return JSON.parseObject(result, new TypeReference<>() {});
     }
+
+    /**
+     * 分页查询短链接监控日志记录
+     */
+    default Result<Page<ShortLinkStatsAccessRecordRespDTO>> shortLinkStatsAccessRecord(ShortLinkAccessRecordReqDTO requestParam) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("fullShortUrl",  requestParam.getFullShortUrl());
+        map.put("startDate",  requestParam.getStartDate());
+        map.put("endDate",  requestParam.getEndDate());
+        map.put("enableStatus",   requestParam.getEnableStatus());
+        map.put("gid",  requestParam.getGid());
+        String resultPageStr = HttpUtil.get("http://127.0.0.1:8001/api/shortlink/v1/stats/access-record", map);
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+    }
+
 }
