@@ -61,6 +61,9 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
 
     /**
      * 获取用户信息是否为新老访客
+     * 判断方法：用户最早访问这个短链接的时间在查询范围内 - 新访客
+     * 使用 script -> 为了在 MyBatis 的 @Select 注解中支持复杂的动态 SQL（如 <foreach>）
+     * 动态SQL：foreach, 生成类似 IN ('user1', 'user2', 'user3') 的条件，防止 SQL 注入。
      */
     @Select("""
             <script>

@@ -16,4 +16,10 @@ public class RecycleBinPageReqDTO extends Page<ShortLinkDO> {
      * 当前用户所有的分组标识列表
      */
     private List<String> gidList;
+
+
+    /**
+     * 排序标识
+     */
+    private String orderTag;
 }
