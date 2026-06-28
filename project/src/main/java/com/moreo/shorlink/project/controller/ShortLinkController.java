@@ -3,9 +3,11 @@ package com.moreo.shorlink.project.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moreo.shorlink.project.common.convention.result.Result;
 import com.moreo.shorlink.project.common.convention.result.Results;
+import com.moreo.shorlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkUpdateReqDTO;
+import com.moreo.shorlink.project.dto.resp.ShortLinkBatchCreateRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
@@ -50,5 +52,13 @@ public class ShortLinkController {
     @GetMapping("/{short-uri}")
     public void restoreUrl(@PathVariable("short-uri") String shortUri, ServletRequest request, ServletResponse response) {
         shortLinkService.restoreUrl(shortUri, request, response);
+    }
+
+    /**
+     * 批量创建短链接
+     */
+    @PostMapping("/api/shortlink/v1/create/batch")
+    public Result<ShortLinkBatchCreateRespDTO> batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam) {
+        return Results.success(shortLinkService.batchCreateShortLink(requestParam));
     }
 }

@@ -20,12 +20,11 @@ import com.moreo.shorlink.project.common.convention.exception.ServiceException;
 import com.moreo.shorlink.project.common.enums.ShortLinkValidType;
 import com.moreo.shorlink.project.dao.entity.*;
 import com.moreo.shorlink.project.dao.mapper.*;
+import com.moreo.shorlink.project.dto.req.ShortLinkBatchCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkPageReqDTO;
 import com.moreo.shorlink.project.dto.req.ShortLinkUpdateReqDTO;
-import com.moreo.shorlink.project.dto.resp.ShortLinkCreateRespDTO;
-import com.moreo.shorlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
-import com.moreo.shorlink.project.dto.resp.ShortLinkPageRespDTO;
+import com.moreo.shorlink.project.dto.resp.*;
 import com.moreo.shorlink.project.service.ShortLinkService;
 import com.moreo.shorlink.project.util.HashUtil;
 import com.moreo.shorlink.project.util.LinkUtil;
@@ -295,6 +294,34 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             lock.unlock();
         }
 
+    }
+
+    @Override
+    public ShortLinkBatchCreateRespDTO batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam) {
+        List<String> originUrls = requestParam.getOriginUrls();
+        List<String> describes = requestParam.getDescribes();
+        List<ShortLinkBaseInfoRespDTO> result = new ArrayList<>();
+        for(int i = 0; i < originUrls.size(); i++) {
+            // 创建单个短链接
+            ShortLinkCreateReqDTO shortLinkCreateReqDTO = BeanUtil.toBean(requestParam, ShortLinkCreateReqDTO.class);
+            shortLinkCreateReqDTO.setOriginUrl(originUrls.get(i));
+            shortLinkCreateReqDTO.setDescribe(describes.get(i));
+            try {
+                ShortLinkCreateRespDTO shortlink = createShortLink(shortLinkCreateReqDTO);
+                ShortLinkBaseInfoRespDTO shortLinkBaseInfoRespDTO = ShortLinkBaseInfoRespDTO.builder()
+                        .fullShortUrl(shortlink.getFullShortUrl())
+                        .originUrl(shortlink.getOriginUrl())
+                        .describe(describes.get(i))
+                        .build();
+                result.add(shortLinkBaseInfoRespDTO);
+            }catch (Throwable ex) {
+                log.error("批量创建短链接失败，原始参数：{}", originUrls.get(i));
+            }
+        }
+        return ShortLinkBatchCreateRespDTO.builder()
+                .total(result.size())
+                .baseLinkInfos(result)
+                .build();
     }
 
     private void shortLinkStats(String fullShortUrl, String gid, ServletRequest request, ServletResponse response) {

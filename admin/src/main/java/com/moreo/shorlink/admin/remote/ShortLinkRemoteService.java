@@ -108,4 +108,19 @@ public interface ShortLinkRemoteService {
         return JSON.parseObject(resultPageStr, new TypeReference<>() {});
     }
 
+    /**
+     * 批量创建短链接
+     */
+    default Result<ShortLinkBatchCreateRespDTO> batchCreateShortLink(ShortLinkBatchCreateReqDTO requestParam){
+        Map<String, Object> map = new HashMap<>();
+        map.put("createType",  requestParam.getCreatedType());
+        map.put("originUrls",  requestParam.getOriginUrls());
+        map.put("describes",   requestParam.getDescribes());
+        map.put("validDateType",   requestParam.getValidDateType());
+        map.put("validDate",   requestParam.getValidDate());
+        map.put("gid",  requestParam.getGid());
+        String resultPageStr = HttpUtil.post("http://127.0.0.1:8001/api/shortlink/v1/create/batch", JSON.toJSONString(requestParam));
+        return JSON.parseObject(resultPageStr, new TypeReference<>() {});
+    }
+
 }
