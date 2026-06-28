@@ -12,7 +12,9 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ShortLinkMapper extends BaseMapper<ShortLinkDO> {
 
-    // 直接拿的仓库代码，后期才使用
+    /**
+     * 分页查询短链接，加上了监控信息
+     */
     IPage<ShortLinkDO> pageLink(ShortLinkPageReqDTO pageParam);
 
     /**
